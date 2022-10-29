@@ -24,7 +24,7 @@ using namespace std;
 #include <arpa/inet.h>
 #include <ctype.h>
 
-#define PORT          8080     /* Server port */
+// #define PORT          8080     /* Server port */
 #define HEADER_SIZE   10240L /* Maximum size of a request header line */
 #define CGI_POST      10240L /* Buffer size for reading POST data to CGI */
 #define CGI_BUFFER    10240L /* Buffer size for reading CGI output */
@@ -51,7 +51,7 @@ using namespace std;
 /*
  * Directory to serve out of.
  */
-#define PAGES_DIRECTORY "htdocs"
+// #define PAGES_DIRECTORY "htdocs"
 #define VERSION_STRING  "klange/0.5"
 
 /*
@@ -82,6 +82,9 @@ int serversock;
  * Port
  */
 int port;
+// char* docs;
+string docs;
+
 
 /*
  * Last unaccepted socket pointer
@@ -499,8 +502,8 @@ _unsupported:
 		 * Get some important information on the requested file
 		 * _filename: the local file name, relative to `.`
 		 */
-		_filename = (char*)calloc(sizeof(char) * (strlen(PAGES_DIRECTORY) + strlen(filename) + 2), 1);
-		strcat(_filename, PAGES_DIRECTORY);
+		_filename = (char*)calloc(sizeof(char) * (strlen(docs.c_str()) + strlen(filename) + 2), 1);
+		strcat(_filename, docs.c_str());
 		strcat(_filename, filename);
 		if (strstr(_filename, "%")) {
 			/*
@@ -685,7 +688,8 @@ _use_file:
 				/*
 				 * Could not open file - 404. (Perhaps 403)
 				 */
-				content = fopen(PAGES_DIRECTORY "/404.htm", "rb");
+				string pa = docs+"/404.htm";
+				content = fopen(pa.c_str(), "rb");
 
 				if (!content) {
 					/*
@@ -701,9 +705,9 @@ _use_file:
 				 * and continue to load it.
 				 */
 				fprintf(socket_stream, "HTTP/1.1 404 File Not Found\r\n");
-				_filename = (char*)realloc(_filename, strlen(PAGES_DIRECTORY "/404.htm") + 1);
+				_filename = (char*)realloc(_filename, strlen((docs+ "/404.htm").c_str()) + 1);
 				_filename[0] = '\0';
-				strcat(_filename, PAGES_DIRECTORY "/404.htm");
+				strcat(_filename, (docs+"/404.htm").c_str());
 				ext = strstr(_filename, ".");
 			} else {
 				/*
@@ -755,7 +759,7 @@ _use_file:
 						_filename[-1] = '\0';
 						char docroot[1024];
 						getcwd(docroot, 1023);
-						strcat(docroot, "/" PAGES_DIRECTORY);
+						strcat(docroot, ("/"+docs).c_str());
 						chdir(dir);
 
 						/*
@@ -1184,7 +1188,7 @@ void start_httpd(unsigned short port, string doc_root)
 {
 	cerr << "Starting server (port: " << port <<
 		", doc_root: " << doc_root << ")" << endl;
-	
+	docs=doc_root.c_str();
 	/*
 	 * Initialize the TCP socket
 	 */
@@ -1216,7 +1220,7 @@ void start_httpd(unsigned short port, string doc_root)
 	 */
 	listen(serversock, 50);
 	printf("[info] Listening on port %d.\n", port);
-	printf("[info] Serving out of '" PAGES_DIRECTORY "'.\n");
+	printf("[info] Serving out of '%s '.\n",docs.c_str());
 	printf("[info] Server version string is " VERSION_STRING ".\n");
 
 	/*
