@@ -34,7 +34,9 @@ int main(int argc, char *argv[])
 		return 3;
 	}
     string doc_root = argv[2];
-	if(strcmp(argv[3],"nopool") ){
+	string str = "nopool";
+	const char * st = str.c_str();
+	if(strcmp(argv[3],"st") ){
 		start_httpd(port,doc_root,0);
 	}else{
 		start_httpd(port,doc_root,atoi(argv[4]));
