@@ -15,8 +15,9 @@ void usage(char * argv0)
 
 int main(int argc, char *argv[])
 {
-	if (argc!=3) {
+	if (argc!=4&&argc!=5) {
 		usage(argv[0]);
+		cerr<<"2"<<endl;
 		return 1;
 	}
 
@@ -24,6 +25,7 @@ int main(int argc, char *argv[])
 
 	if (errno == EINVAL || errno == ERANGE) {
 		usage(argv[0]);
+		cerr<<"1"<<endl;
 		return 2;
 	}
 
@@ -32,6 +34,11 @@ int main(int argc, char *argv[])
 		return 3;
 	}
     string doc_root = argv[2];
-    start_httpd(port,doc_root);
+	if(strcmp(argv[3],"nopool") ){
+		start_httpd(port,doc_root,0);
+	}else{
+		start_httpd(port,doc_root,atoi(argv[4]));
+	}
+    
 	return 0;
 }

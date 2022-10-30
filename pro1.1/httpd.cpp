@@ -86,7 +86,7 @@ int port;
 // char* docs;
 string docs;
 
-threadpool_t *thp = threadpool_create(10,100,100);/*创建线程池，池里最小10个线程，最大100，队列最大100*/
+threadpool_t *thp=NULL; 
 
 /*
  * Last unaccepted socket pointer
@@ -1274,8 +1274,15 @@ _disconnect:
 	return NULL;
 }
 
-void start_httpd(unsigned short port, string doc_root)
+void start_httpd(unsigned short port, string doc_root, int nums)
 {
+
+	if(nums==0){
+		thp = threadpool_create(10,100,100);/*创建线程池，池里最小10个线程，最大100，队列最大100*/
+	}else{
+		thp = threadpool_create(nums,100,100);/*创建线程池，池里最小10个线程，最大100，队列最大100*/
+	}
+
 	cerr << "Starting server (port: " << port <<
 		", doc_root: " << doc_root << ")" << endl;
 	//终端输入进来的文件路径htdoc
